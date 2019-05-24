@@ -1,8 +1,11 @@
 import React from "react";
 import { View } from "react-native";
 // import Icon from "react-native-vector-icons/FontAwesome";
-import { Input, Card } from "react-native-elements";
-import login from "../actions";
+import { Input, Card, Button } from "react-native-elements";
+import * as actions from "../actions";
+import store from "../store";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 class Login extends React.Component {
   static navigationOptions = {
@@ -13,12 +16,13 @@ class Login extends React.Component {
 
   handleLogin = e => {
     e.preventDefault();
+    // console.log(this.state);
     this.props.login(this.state);
+    console.log(store.getState());
   };
 
   handleChange = (text, name) => {
     this.setState({ [name]: text });
-    console.log(this.state);
   };
 
   render() {
@@ -43,10 +47,26 @@ class Login extends React.Component {
               this.handleChange(text, "password");
             }}
           />
+          <Button title="submit" onPress={this.handleLogin} />
         </Card>
       </View>
     );
   }
 }
 
-export default Login;
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actions, dispatch);
+}
+
+function mapStateToProps(state, props) {
+  // console.log(state);
+  return {
+    loginLoading: state.dataReducer.loginLoading,
+    loginError: state.dataReducer.loginError
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);
